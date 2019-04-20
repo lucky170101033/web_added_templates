@@ -169,7 +169,7 @@ def registerPage(request):
             add_user.save()
             # print(username)
             add_profile = Profile.objects.create(user=add_user,department=department,program=program,roll_no=str(roll_no),phone_no=str(phone_no))
-            return redirect('/register/')
+            return redirect('loginPage')
         else:
             return render(request, 'register.html', {'form':rform})
 
@@ -248,6 +248,21 @@ def change_password(request):
             logout(request)
             return redirect('loginPage')
         else:
+            for i in form.errors:
+                if(str(i)=='old_password'):
+                    error_message="Old Password entered is not correct. Click 'GO BACK' to try again"
+                    context={
+                        'text': error_message,
+                        'back': 'change_passwd',
+                    }
+                else:
+                    error_message="The password entered doesn't meet the criteria. Click 'GO BACK' to try again"
+                    context={
+                        'text':error_message,
+                        'back':'change_passwd',
+                    }    
+                return render(request,'error_message.html',context)
+
             return redirect('change_passwd')
     else:
         form=PasswordChangeForm(user=request.user)
@@ -565,11 +580,18 @@ def poll_modify(request,event_id):
             else :
                 return redirect('poll_count_vote', event_id)
     else :
+        error_message="You can not vote modify your vote before giving first choice"
         context = {
-            'kk' : event_id,
+            'id' : event_id,
+            'text' : error_message,
         }
         return render(request,'error.html',context)  
 
     return render(request, 'poll_vote.html', {'form':form})
   
-    
+@login_required(login_url='loginPage')
+def feedback(request,event_id):
+    events_past = Event.objects.filter(event_id=event_id)[0]
+    # req_event=events_past.filter(event_id=event_id)
+    feedbacks = EventFeedback.objects.filter(to_event=events_past)
+    return render(request,'see_feedback.html',{'display_id':str(request.user), 'events_today':feedbacks,})

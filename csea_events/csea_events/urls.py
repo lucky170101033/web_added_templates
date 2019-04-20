@@ -39,6 +39,6 @@ urlpatterns = [
     path('poll/<uuid:event_id>/',views.poll_count_view,name='poll_count'),
     path('poll/<uuid:event_id>/vote',views.poll_vote,name='poll_count_vote'),
     path('poll/<uuid:event_id>/modify',views.poll_modify,name='poll_count_modify'),
-
+    path('my-events/<uuid:event_id>',views.feedback,name='see_feedback'),
     
 ]
