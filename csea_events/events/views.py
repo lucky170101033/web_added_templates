@@ -589,4 +589,9 @@ def poll_modify(request,event_id):
 
     return render(request, 'poll_vote.html', {'form':form})
   
-    
+@login_required(login_url='loginPage')
+def feedback(request,event_id):
+    events_past = Event.objects.filter(event_id=event_id)[0]
+    # req_event=events_past.filter(event_id=event_id)
+    feedbacks = EventFeedback.objects.filter(to_event=events_past)
+    return render(request,'see_feedback.html',{'display_id':str(request.user), 'events_today':feedbacks,})
